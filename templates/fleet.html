@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-primary">Our Fleet</h2>
+<div class="row g-4">
+  {% for v in vehicles %}
+  <div class="col-md-3">
+    <div class="card h-100">
+      <img src="{{ url_for('static', filename='images/vehicle-placeholder.jpg') }}" class="card-img-top" alt="{{ v.name }}">
+      <div class="card-body">
+        <h5 class="card-title">{{ v.name }}</h5>
+        <p class="card-text text-muted">{{ v.desc }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

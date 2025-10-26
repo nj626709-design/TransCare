@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-primary">Contact Us</h2>
+<div class="row">
+  <div class="col-md-6">
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.name.label(class_="form-label") }}
+        {{ form.name(class_="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.email.label(class_="form-label") }}
+        {{ form.email(class_="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.phone.label(class_="form-label") }}
+        {{ form.phone(class_="form-control") }}
+      </div>
+      <div class="mb-3">
+        {{ form.message.label(class_="form-label") }}
+        {{ form.message(class_="form-control", rows="4") }}
+      </div>
+      <button class="btn btn-primary" type="submit">{{ form.submit.label.text }}</button>
+    </form>
+  </div>
+  <div class="col-md-6">
+    <h5>Reach us</h5>
+    <p>Phone: +91-8976781234 / 7039651234</p>
+    <p>Email: info@transcare.com</p>
+    <h6>Office</h6>
+    <p>Office No. 201, 2nd Floor, Shree Sai Anant bldg., Sector 19, Koparkhairane, Navi Mumbai, Maharashtra 400709 </p><p>— Open Mon–Fri</p>
+    
+  </div>
+</div>
+{% endblock %}

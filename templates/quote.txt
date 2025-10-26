@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-primary">Request a Quote / Booking</h2>
+<form method="post">
+  {{ form.hidden_tag() }}
+  <div class="row">
+    <div class="col-md-6 mb-3">{{ form.name.label }}{{ form.name(class_="form-control") }}</div>
+    <div class="col-md-6 mb-3">{{ form.email.label }}{{ form.email(class_="form-control") }}</div>
+    <div class="col-md-6 mb-3">{{ form.phone.label }}{{ form.phone(class_="form-control") }}</div>
+    <div class="col-md-6 mb-3">{{ form.vehicle_type.label }}{{ form.vehicle_type(class_="form-select") }}</div>
+    <div class="col-md-6 mb-3">{{ form.date_needed.label }}{{ form.date_needed(class_="form-control") }}</div>
+    <div class="col-12 mb-3">{{ form.message.label }}{{ form.message(class_="form-control", rows=4) }}</div>
+  </div>
+  <button class="btn btn-primary" type="submit">{{ form.submit.label.text }}</button>
+</form>
+{% endblock %}

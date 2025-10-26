@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-primary">Quote Requests (Admin)</h2>
+<table class="table table-striped">
+  <thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Pickup</th><th>Dropoff</th><th>Date</th><th>Vehicle</th><th>Received</th></tr></thead>
+  <tbody>
+  {% for q in quotes %}
+    <tr>
+      <td>{{ q.id }}</td>
+      <td>{{ q.name }}<br><small>{{ q.email }}</small></td>
+      <td>{{ q.phone }}</td>
+      <td>{{ q.pickup }}</td>
+      <td>{{ q.dropoff }}</td>
+      <td>{{ q.date_needed }}</td>
+      <td>{{ q.vehicle_type }}</td>
+      <td>{{ q.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="8">No quotes yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
