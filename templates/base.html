@@ -3,10 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Transcare - Transport</title>
+
+  <!-- SEO Title -->
+  <title>TransCare Transport – Reliable Transport & Logistics Services Across India</title>
+
+  <!-- SEO Description -->
+  <meta name="description" content="TransCare Transport provides safe, reliable, on-time logistics, goods transport, vehicle services, and delivery solutions across India. Fast, secure, and professional transportation services.">
+
+  <!-- SEO Keywords -->
+  <meta name="keywords" content="transcare transport, logistics service, transportation service, goods transport, delivery service, transport company India, pune transport company, logistics provider, packers movers, vehicle transport">
+
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="nhqBStmEiru2oqf4ViL8oHICWMuOqyU4XRW6PLi3FX8">
+
+  <!-- Open Graph (WhatsApp, Facebook Preview) -->
+  <meta property="og:title" content="TransCare Transport – Reliable Logistics Services">
+  <meta property="og:description" content="Fast and secure transport & logistics services across India.">
+  <meta property="og:image" content="{{ url_for('static', filename='TRANSCARE.jpg') }}">
+  <meta property="og:type" content="website">
+
+  <!-- CSS Files -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container">
@@ -14,14 +34,19 @@
       <img src="{{ url_for('static', filename='TRANSCARE.jpg') }}" alt="Transcare" height="100" class="me-2">
       <span class="fw-bold text-primary">Transcare</span>
     </a>
-    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}">About</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('services') }}">Services</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
-        <li class="nav-item"><a class="btn btn-primary ms-2 text-white" href="{{ url_for('quote') }}">Request Quote</a></li>
+        <li class="nav-item">
+          <a class="btn btn-primary ms-2 text-white" href="{{ url_for('quote') }}">Request Quote</a>
+        </li>
       </ul>
     </div>
   </div>
@@ -39,6 +64,7 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
+
     {% block content %}{% endblock %}
   </div>
 </main>
@@ -46,9 +72,11 @@
 <footer class="bg-white border-top py-4">
   <div class="container text-center">
     <p class="mb-0">© {{ config.SITE_NAME }} {{ current_year() }}</p>
+  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
 </body>
 </html>
