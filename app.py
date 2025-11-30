@@ -59,6 +59,11 @@ def create_app():
             return redirect(url_for('contact'))
         return render_template('contact.html', form=form)
 
+    @app.route('/clients')
+    def clients():
+        return render_template('clients.html')
+
+
     @app.route('/quote', methods=['GET', 'POST'])
     def quote():
         form = QuoteForm()

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Our Happy Clients</h2>
+
+    <div class="row g-4 justify-content-center">
+
+        <!-- Client Image 1 -->
+        <div class="col-6 col-md-3 text-center">
+            <img src="{{ url_for('static', filename='clients/client1.jpeg') }}"
+                 class="img-fluid rounded shadow-sm" alt="Client 1">
+        </div>
+
+        <!-- Client Image 2 -->
+        <div class="col-6 col-md-3 text-center">
+            <img src="{{ url_for('static', filename='clients/client2.jpeg') }}"
+                 class="img-fluid rounded shadow-sm" alt="Client 2">
+        </div>
+
+        <!-- Client Image 3 -->
+        <div class="col-6 col-md-3 text-center">
+            <img src="{{ url_for('static', filename='clients/client3.jpeg') }}"
+                 class="img-fluid rounded shadow-sm" alt="Client 3">
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
