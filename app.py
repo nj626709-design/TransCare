@@ -5,110 +5,114 @@ import os
 
 load_dotenv()
 
-app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+mail = Mail()  # Initialize without app yet
+
+def create_app():
+    app = Flask(__name__)
+    app.secret_key = os.getenv("SECRET_KEY")
+
+    # ========================
+    #      EMAIL SETTINGS
+    # ========================
+    app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
+    app.config['MAIL_PORT'] = int(os.getenv("MAIL_PORT"))
+    app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+    app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+    app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS") == "True"
+    app.config['MAIL_USE_SSL'] = False
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER")
+
+    mail.init_app(app)  # Attach mail to app
+
+    # ========================
+    #       ROUTES
+    # ========================
+    @app.route('/')
+    def home():
+        return render_template('home.html')
+
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
+
+    @app.route('/contact', methods=['POST'])
+    def contact():
+        try:
+            name = request.form.get('name')
+            email = request.form.get('email')
+            subject = request.form.get('subject')
+            message = request.form.get('message')
+
+            msg = Message(
+                subject=f"New Contact Message: {subject}",
+                sender=os.getenv("MAIL_DEFAULT_SENDER"),
+                recipients=[os.getenv("MAIL_USERNAME")]
+            )
+
+            msg.body = f"""
+            New Contact Message from TransCare Website
+
+            Name: {name}
+            Email: {email}
+            Subject: {subject}
+            Message:
+            {message}
+            """
+
+            mail.send(msg)
+            flash("Your message has been sent successfully!", "success")
+            return redirect(url_for('home'))
+
+        except Exception as e:
+            print("Error sending email:", e)
+            flash("Something went wrong. Please try again.", "danger")
+            return redirect(url_for('home'))
+
+    @app.route('/quote', methods=['POST'])
+    def quote():
+        try:
+            name = request.form.get('name')
+            email = request.form.get('email')
+            phone = request.form.get('phone')
+            pickup = request.form.get('pickup')
+            drop = request.form.get('drop')
+            goods = request.form.get('goods')
+            weight = request.form.get('weight')
+
+            msg = Message(
+                subject="New Quote Request",
+                sender=os.getenv("MAIL_DEFAULT_SENDER"),
+                recipients=[os.getenv("MAIL_USERNAME")]
+            )
+
+            msg.body = f"""
+            New Quote Request from TransCare Website
+
+            Name: {name}
+            Email: {email}
+            Phone: {phone}
+
+            Pickup Location: {pickup}
+            Drop Location: {drop}
+
+            Type of Goods: {goods}
+            Weight: {weight} kg
+            """
+
+            mail.send(msg)
+            flash("Quote request sent successfully!", "success")
+            return redirect(url_for('home'))
+
+        except Exception as e:
+            print("Error sending quote email:", e)
+            flash("Failed to send quote. Please try again.", "danger")
+            return redirect(url_for('home'))
+
+    return app
 
 # ========================
-#      EMAIL SETTINGS
+#   RUN LOCALLY
 # ========================
-app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
-app.config['MAIL_PORT'] = int(os.getenv("MAIL_PORT"))
-app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
-app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
-app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS") == "True"
-app.config['MAIL_USE_SSL'] = False
-
-mail = Mail(app)
-
-# ========================
-#       ROUTES
-# ========================
-
-@app.route('/')
-def home():
-    return render_template('home.html')
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/contact', methods=['POST'])
-def contact():
-    try:
-        name = request.form.get('name')
-        email = request.form.get('email')
-        subject = request.form.get('subject')
-        message = request.form.get('message')
-
-        msg = Message(
-            subject=f"New Contact Message: {subject}",
-            sender=os.getenv("MAIL_DEFAULT_SENDER"),
-            recipients=[os.getenv("MAIL_USERNAME")]
-        )
-
-        msg.body = f"""
-        New Contact Message from TransCare Website
-
-        Name: {name}
-        Email: {email}
-        Subject: {subject}
-        Message:
-        {message}
-        """
-
-        mail.send(msg)
-        flash("Your message has been sent successfully!", "success")
-        return redirect(url_for('home'))
-
-    except Exception as e:
-        print("Error sending email:", e)
-        flash("Something went wrong. Please try again.", "danger")
-        return redirect(url_for('home'))
-
-
-@app.route('/quote', methods=['POST'])
-def quote():
-    try:
-        name = request.form.get('name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        pickup = request.form.get('pickup')
-        drop = request.form.get('drop')
-        goods = request.form.get('goods')
-        weight = request.form.get('weight')
-
-        msg = Message(
-            subject="New Quote Request",
-            sender=os.getenv("MAIL_DEFAULT_SENDER"),
-            recipients=[os.getenv("MAIL_USERNAME")]
-        )
-
-        msg.body = f"""
-        New Quote Request from TransCare Website
-
-        Name: {name}
-        Email: {email}
-        Phone: {phone}
-
-        Pickup Location: {pickup}
-        Drop Location: {drop}
-
-        Type of Goods: {goods}
-        Weight: {weight} kg
-        """
-
-        mail.send(msg)
-        flash("Quote request sent successfully!", "success")
-        return redirect(url_for('home'))
-
-    except Exception as e:
-        print("Error sending quote email:", e)
-        flash("Failed to send quote. Please try again.", "danger")
-        return redirect(url_for('home'))
-
-# ========================
-#   START FLASK SERVER
-# ========================
-
 if __name__ == "__main__":
+    app = create_app()
     app.run(debug=True)
