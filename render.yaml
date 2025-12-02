@@ -1,21 +1,13 @@
 services:
   - type: web
-    name: transcare-web
+    name: TransCare
     env: python
-    buildCommand: ""
-    startCommand: gunicorn app:app
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
     envVars:
-      - key: SECRET_KEY
-        sync: false
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
-        sync: false
-      - key: MAIL_DEFAULT_SENDER
-        sync: false
-      - key: MAIL_SERVER
-        value: smtp.hostinger.com
-      - key: MAIL_PORT
-        value: 587
-      - key: MAIL_USE_TLS
-        value: "True"
+      - key: DATABASE_URL
+        value: sqlite:///instance/database.db
+    disk:
+      name: db-disk
+      mountPath: /opt/render/project/src/instance
+      sizeGB: 1
