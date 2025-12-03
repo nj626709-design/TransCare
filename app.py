@@ -38,6 +38,9 @@ def create_app():
     def services():
         return render_template('services.html')
 
+    @app.route('/clients')
+    def clients():
+        return render_template('clients.html')
 
     @app.route('/contact', methods=['POST'])
     def contact():
