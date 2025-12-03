@@ -84,6 +84,7 @@ Message:
                 flash("Something went wrong. Please try again.", "danger")
                 return redirect(url_for('home'))
 
+        # Render contact page (no Flask-WTF form needed)
         return render_template('contact.html')
 
     @app.route('/quote', methods=['GET', 'POST'])
@@ -127,6 +128,7 @@ Weight: {weight} kg
                 flash("Failed to send quote. Please try again.", "danger")
                 return redirect(url_for('home'))
 
+        # Render quote page (no Flask-WTF form needed)
         return render_template('quote.html')
 
     return app
