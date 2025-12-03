@@ -50,8 +50,9 @@ def create_app():
     def clients():
         return render_template('clients.html')
 
-    @app.route('/contact', methods=['POST'])
-    def contact():
+    @app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
         try:
             name = request.form.get('name')
             email = request.form.get('email')
@@ -83,8 +84,13 @@ def create_app():
             flash("Something went wrong. Please try again.", "danger")
             return redirect(url_for('home'))
 
-    @app.route('/quote', methods=['POST'])
-    def quote():
+    # Render the contact page if GET
+    return render_template('contact.html')
+
+
+@app.route('/quote', methods=['GET', 'POST'])
+def quote():
+    if request.method == 'POST':
         try:
             name = request.form.get('name')
             email = request.form.get('email')
@@ -123,7 +129,9 @@ def create_app():
             flash("Failed to send quote. Please try again.", "danger")
             return redirect(url_for('home'))
 
-    return app
+    # Render the quote page if GET
+    return render_template('quote.html')
+
 
 
 # Only for local development
