@@ -1,14 +1,22 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
+from datetime import datetime
 import os
 
 load_dotenv()
 
 mail = Mail()
 
+def current_year():
+    return datetime.now().year
+
 def create_app():
     app = Flask(__name__)
+
+    # make current_year available in all templates
+    app.jinja_env.globals['current_year'] = current_year
+
     app.secret_key = os.getenv("SECRET_KEY")
 
     # ========================
