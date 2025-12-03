@@ -5,7 +5,7 @@ import os
 
 load_dotenv()
 
-mail = Mail()  # Initialize without app yet
+mail = Mail()
 
 def create_app():
     app = Flask(__name__)
@@ -20,9 +20,8 @@ def create_app():
     app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
     app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS") == "True"
     app.config['MAIL_USE_SSL'] = False
-    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER")
 
-    mail.init_app(app)  # Attach mail to app
+    mail.init_app(app)
 
     # ========================
     #       ROUTES
@@ -104,15 +103,14 @@ def create_app():
             return redirect(url_for('home'))
 
         except Exception as e:
-            print("Error sending quote email:", e)
+            print("Error sending quote:", e)
             flash("Failed to send quote. Please try again.", "danger")
             return redirect(url_for('home'))
 
     return app
 
-# ========================
-#   RUN LOCALLY
-# ========================
+
+# Only for local development
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)
