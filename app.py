@@ -50,21 +50,22 @@ def create_app():
     def clients():
         return render_template('clients.html')
 
-    @app.route('/contact', methods=['POST'])
+    @app.route('/contact', methods=['GET', 'POST'])
     def contact():
-        try:
-            name = request.form.get('name')
-            email = request.form.get('email')
-            subject = request.form.get('subject')
-            message = request.form.get('message')
+        if request.method == 'POST':
+            try:
+                name = request.form.get('name')
+                email = request.form.get('email')
+                subject = request.form.get('subject')
+                message = request.form.get('message')
 
-            msg = Message(
-                subject=f"New Contact Message: {subject}",
-                sender=os.getenv("MAIL_DEFAULT_SENDER"),
-                recipients=[os.getenv("MAIL_USERNAME")]
+                msg = Message(
+                    subject=f"New Contact Message: {subject}",
+                    sender=os.getenv("MAIL_DEFAULT_SENDER"),
+                    recipients=[os.getenv("MAIL_USERNAME")]
                 )
 
-            msg.body = f"""
+                msg.body = f"""
 New Contact Message from TransCare Website
 
 Name: {name}
@@ -74,55 +75,61 @@ Message:
 {message}
 """
 
-            mail.send(msg)
-            flash("Your message has been sent successfully!", "success")
-            return redirect(url_for('home'))
+                mail.send(msg)
+                flash("Your message has been sent successfully!", "success")
+                return redirect(url_for('home'))
 
-        except Exception as e:
-            print("Error sending email:", e)
-            flash("Something went wrong. Please try again.", "danger")
-            return redirect(url_for('home'))
+            except Exception as e:
+                print("Error sending email:", e)
+                flash("Something went wrong. Please try again.", "danger")
+                return redirect(url_for('home'))
 
+        return render_template('contact.html')
 
-@app.route('/quote', methods=['POST'])
-def quote():
-    try:
-        name = request.form.get('name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        pickup = request.form.get('pickup')
-        drop = request.form.get('drop')
-        goods = request.form.get('goods')
-        weight = request.form.get('weight')
+    @app.route('/quote', methods=['GET', 'POST'])
+    def quote():
+        if request.method == 'POST':
+            try:
+                name = request.form.get('name')
+                email = request.form.get('email')
+                phone = request.form.get('phone')
+                pickup = request.form.get('pickup')
+                drop = request.form.get('drop')
+                goods = request.form.get('goods')
+                weight = request.form.get('weight')
 
-        msg = Message(
-            subject="New Quote Request",
-            sender=os.getenv("MAIL_DEFAULT_SENDER"),
-            recipients=[os.getenv("MAIL_USERNAME")]
-        )
+                msg = Message(
+                    subject="New Quote Request",
+                    sender=os.getenv("MAIL_DEFAULT_SENDER"),
+                    recipients=[os.getenv("MAIL_USERNAME")]
+                )
 
-        msg.body = f"""
-        New Quote Request from TransCare Website
+                msg.body = f"""
+New Quote Request from TransCare Website
 
-        Name: {name}
-        Email: {email}
-        Phone: {phone}
+Name: {name}
+Email: {email}
+Phone: {phone}
 
-        Pickup Location: {pickup}
-        Drop Location: {drop}
+Pickup Location: {pickup}
+Drop Location: {drop}
 
-        Type of Goods: {goods}
-        Weight: {weight} kg
-        """
+Type of Goods: {goods}
+Weight: {weight} kg
+"""
 
-        mail.send(msg)
-        flash("Quote request sent successfully!", "success")
-        return redirect(url_for('home'))
+                mail.send(msg)
+                flash("Quote request sent successfully!", "success")
+                return redirect(url_for('home'))
 
-    except Exception as e:
-        print("Error sending quote:", e)
-        flash("Failed to send quote. Please try again.", "danger")
-        return redirect(url_for('home'))
+            except Exception as e:
+                print("Error sending quote:", e)
+                flash("Failed to send quote. Please try again.", "danger")
+                return redirect(url_for('home'))
+
+        return render_template('quote.html')
+
+    return app
 
 
 # Only for local development
