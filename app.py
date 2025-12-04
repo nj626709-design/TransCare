@@ -52,7 +52,6 @@ def create_app():
 
     @app.route('/contact', methods=['GET', 'POST'])
     def contact():
-        return render_template('contact.html')
         if request.method == 'POST':
             try:
                 name = request.form.get('name')
@@ -90,7 +89,6 @@ Message:
 
     @app.route('/quote', methods=['GET', 'POST'])
     def quote():
-        return render_template('quote.html')
         if request.method == 'POST':
             try:
                 name = request.form.get('name')
