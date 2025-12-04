@@ -1,18 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
 <h2 class="text-primary">Request a Quote / Booking</h2>
-<form method="post">
-  {{ form.hidden_tag() }}
+<form action="{{ url_for('quote') }}" method="POST">
   <div class="row">
-    <div class="col-md-6 mb-3">{{ form.name.label }}{{ form.name(class_="form-control") }}</div>
-    <div class="col-md-6 mb-3">{{ form.email.label }}{{ form.email(class_="form-control") }}</div>
-    <div class="col-md-6 mb-3">{{ form.phone.label }}{{ form.phone(class_="form-control") }}</div>
-    <div class="col-md-6 mb-3">{{ form.vehicle_type.label }}{{ form.vehicle_type(class_="form-select") }}</div>
-    <div class="col-md-6 mb-3">{{ form.pickup.label }}{{ form.pickup(class_="form-control") }}</div>
-    <div class="col-md-6 mb-3">{{ form.dropoff.label }}{{ form.dropoff(class_="form-control") }}</div>
-    <div class="col-md-6 mb-3">{{ form.date_needed.label }}{{ form.date_needed(class_="form-control") }}</div>
-    <div class="col-12 mb-3">{{ form.message.label }}{{ form.message(class_="form-control", rows=4) }}</div>
+    <div class="col-md-6 mb-3">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" class="form-control" required>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" class="form-control" required>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="phone">Phone</label>
+      <input type="text" id="phone" name="phone" class="form-control" required>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="vehicle_type">Vehicle Type</label>
+      <select id="vehicle_type" name="vehicle_type" class="form-select">
+        <option value="">Select Vehicle</option>
+        <option value="truck">Truck</option>
+        <option value="van">Van</option>
+        <option value="tempo">Tempo</option>
+        <option value="container">Container</option>
+      </select>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="date_needed">Date Needed</label>
+      <input type="date" id="date_needed" name="date_needed" class="form-control" required>
+    </div>
+    <div class="col-12 mb-3">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" class="form-control" rows="4" placeholder="Additional details"></textarea>
+    </div>
   </div>
-  <button class="btn btn-primary" type="submit">{{ form.submit.label.text }}</button>
+  <button class="btn btn-primary" type="submit">Submit</button>
 </form>
 {% endblock %}
