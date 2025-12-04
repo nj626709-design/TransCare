@@ -50,7 +50,7 @@ def create_app():
     def clients():
         return render_template('clients.html')
 
-    @app.route('/contact', methods=['GET', 'POST'])
+    @app.route('/contact.html', methods=['GET', 'POST'])
     def contact():
         if request.method == 'POST':
             try:
@@ -87,7 +87,7 @@ Message:
         # Render contact page (no Flask-WTF form needed)
         return render_template('contact.html')
 
-    @app.route('/quote', methods=['GET', 'POST'])
+    @app.route('/quote.html', methods=['GET', 'POST'])
     def quote():
         if request.method == 'POST':
             try:
