@@ -8,14 +8,13 @@ load_dotenv()
 
 mail = Mail()
 
-def current_year():
-    return datetime.now().year
-
 def create_app():
     app = Flask(__name__)
 
     # make current_year available in all templates
-    app.jinja_env.globals['current_year'] = current_year
+    @app.context_processor
+    def inject_year():
+        return {"current_year": lambda: datetime.now().year}
 
     app.secret_key = os.getenv("SECRET_KEY")
 
