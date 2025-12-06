@@ -56,37 +56,61 @@ def create_app():
     @app.route('/contact', methods=['GET', 'POST'])
     def contact():
         if request.method == 'POST':
-            name = request.form.get('name')
-            email = request.form.get('email')
-            subject = request.form.get('subject')
-            message = request.form.get('message')
+            name = request.form.get("name")
+            email = request.form.get("email")
+            subject = request.form.get("subject")
+            message = request.form.get("message")
 
-            print("CONTACT FORM RECEIVED:", name, email, subject, message)
+            send_email(
+                subject=f"New Contact Message: {subject}",
+                sender=email,
+                recipients=['yourmail@yourdomain.com'],
+                body=f"""
+New contact form submission:
 
-            # OPTIONAL: Email sending / DB code
-
+Name: {name}
+Email: {email}
+Subject: {subject}
+Message:
+{message}
+"""
+                )
             return render_template("success.html", msg="Your message has been sent!")
-        return render_template('contact.html')
+        return render_template("contact.html")
 
     # ------------------------
     # QUOTE FORM FIXED
     # ------------------------
+
     @app.route('/quote', methods=['GET', 'POST'])
     def quote():
         if request.method == 'POST':
-            name = request.form.get('name')
-            email = request.form.get('email')
-            phone = request.form.get('phone')
-            vehicle_type = request.form.get('vehicle_type')
-            date_needed = request.form.get('date_needed')
-            message = request.form.get('message')
+            name = request.form.get("name")
+            email = request.form.get("email")
+            phone = request.form.get("phone")
+            vehicle_type = request.form.get("vehicle_type")
+            date_needed = request.form.get("date_needed")
+            message = request.form.get("message")
 
-            print("QUOTE FORM RECEIVED:", name, email, phone, vehicle_type, date_needed, message)
+            send_email(
+                subject="New Quote Request",
+                sender=email,
+                recipients=['yourmail@yourdomain.com'],
+                body=f"""
+New quote request:
 
-            # OPTIONAL: Email sending / DB save
+Name: {name}
+Email: {email}
+Phone: {phone}
+Vehicle: {vehicle_type}
+Date Needed: {date_needed}
+Message:
+{message}
+"""
+                )
             return render_template("success.html", msg="Your quote request has been submitted!")
-        return render_template('quote.html')
 
+        return render_template("quote.html")
 
     # Only for local development
     if __name__ == "__main__":
