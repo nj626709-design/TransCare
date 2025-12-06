@@ -83,7 +83,8 @@ Message:
             flash("Something went wrong. Please try again.", "danger")
             return redirect(url_for('home'))
 
-    return render_template('contact.html')    # ✔ moved to bottom
+    return render_template('contact.html')
+
 
 @app.route('/quote', methods=['GET', 'POST'])
 def quote():
@@ -126,7 +127,7 @@ Weight: {weight} kg
             flash("Failed to send quote. Please try again.", "danger")
             return redirect(url_for('home'))
 
-    return render_template('quote.html')   # ✔ moved to bottom
+    return render_template('quote.html')
 
 
 # Only for local development
