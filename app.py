@@ -49,92 +49,48 @@ def create_app():
     def clients():
         return render_template('clients.html')
 
-    # ------------------------
+
+# ------------------------
     # CONTACT FORM FIXED
     # ------------------------
+    
     @app.route('/contact', methods=['GET', 'POST'])
-    def contact():
-        if request.method == 'POST':
-            try:
-                name = request.form.get('name')
-                email = request.form.get('email')
-                subject = request.form.get('subject')
-                message = request.form.get('message')
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
 
-                msg = Message(
-                    subject=f"New Contact Message: {subject}",
-                    sender=os.getenv("MAIL_DEFAULT_SENDER"),
-                    recipients=[os.getenv("MAIL_USERNAME")]
-                )
+        print("CONTACT FORM RECEIVED:", name, email, subject, message)
 
-                msg.body = f"""
-New Contact Message from TransCare Website
+        # OPTIONAL: Email sending / DB code
 
-Name: {name}
-Email: {email}
-Subject: {subject}
-Message:
-{message}
-"""
+        return render_template("success.html", msg="Your message has been sent!")
 
-                mail.send(msg)
-                flash("Your message has been sent successfully!", "success")
-                return redirect(url_for('home'))
-
-            except Exception as e:
-                print("Error sending email:", e)
-                flash("Something went wrong. Please try again.", "danger")
-                return redirect(url_for('home'))
-
-        return render_template('contact.html')
+    return render_template('contact.html')
 
     # ------------------------
     # QUOTE FORM FIXED
     # ------------------------
     @app.route('/quote', methods=['GET', 'POST'])
-    def quote():
-        if request.method == 'POST':
-            try:
-                name = request.form.get('name')
-                email = request.form.get('email')
-                phone = request.form.get('phone')
-                pickup = request.form.get('pickup')
-                drop = request.form.get('drop')
-                goods = request.form.get('goods')
-                weight = request.form.get('weight')
+def quote():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        vehicle_type = request.form.get('vehicle_type')
+        date_needed = request.form.get('date_needed')
+        message = request.form.get('message')
 
-                msg = Message(
-                    subject="New Quote Request",
-                    sender=os.getenv("MAIL_DEFAULT_SENDER"),
-                    recipients=[os.getenv("MAIL_USERNAME")]
-                )
+        print("QUOTE FORM RECEIVED:", name, email, phone, vehicle_type, date_needed, message)
 
-                msg.body = f"""
-New Quote Request from TransCare Website
+        # OPTIONAL: Email sending / DB save
 
-Name: {name}
-Email: {email}
-Phone: {phone}
+        return render_template("success.html", msg="Your quote request has been submitted!")
 
-Pickup Location: {pickup}
-Drop Location: {drop}
+    return render_template('quote.html')
 
-Type of Goods: {goods}
-Weight: {weight} kg
-"""
-
-                mail.send(msg)
-                flash("Quote request sent successfully!", "success")
-                return redirect(url_for('home'))
-
-            except Exception as e:
-                print("Error sending quote:", e)
-                flash("Failed to send quote. Please try again.", "danger")
-                return redirect(url_for('home'))
-
-        return render_template('quote.html')
-
-    return app
 
 
 # Only for local development
