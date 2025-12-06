@@ -148,10 +148,13 @@ Weight: {weight} kg
 
     return app
 
+# -----------------------------
+# WSGI app for Render / Production
+# -----------------------------
+app = create_app()
 
 # -----------------------------
-# Run locally only
+# Local development
 # -----------------------------
 if __name__ == "__main__":
-    app = create_app()
     app.run(debug=True)
