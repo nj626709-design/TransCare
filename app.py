@@ -49,51 +49,46 @@ def create_app():
     def clients():
         return render_template('clients.html')
 
-
-# ------------------------
+    # ------------------------
     # CONTACT FORM FIXED
     # ------------------------
-    
+
     @app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        subject = request.form.get('subject')
-        message = request.form.get('message')
+    def contact():
+        if request.method == 'POST':
+            name = request.form.get('name')
+            email = request.form.get('email')
+            subject = request.form.get('subject')
+            message = request.form.get('message')
 
-        print("CONTACT FORM RECEIVED:", name, email, subject, message)
+            print("CONTACT FORM RECEIVED:", name, email, subject, message)
 
-        # OPTIONAL: Email sending / DB code
+            # OPTIONAL: Email sending / DB code
 
-        return render_template("success.html", msg="Your message has been sent!")
-
-    return render_template('contact.html')
+            return render_template("success.html", msg="Your message has been sent!")
+        return render_template('contact.html')
 
     # ------------------------
     # QUOTE FORM FIXED
     # ------------------------
     @app.route('/quote', methods=['GET', 'POST'])
-def quote():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        vehicle_type = request.form.get('vehicle_type')
-        date_needed = request.form.get('date_needed')
-        message = request.form.get('message')
+    def quote():
+        if request.method == 'POST':
+            name = request.form.get('name')
+            email = request.form.get('email')
+            phone = request.form.get('phone')
+            vehicle_type = request.form.get('vehicle_type')
+            date_needed = request.form.get('date_needed')
+            message = request.form.get('message')
 
-        print("QUOTE FORM RECEIVED:", name, email, phone, vehicle_type, date_needed, message)
+            print("QUOTE FORM RECEIVED:", name, email, phone, vehicle_type, date_needed, message)
 
-        # OPTIONAL: Email sending / DB save
-
-        return render_template("success.html", msg="Your quote request has been submitted!")
-
-    return render_template('quote.html')
+            # OPTIONAL: Email sending / DB save
+            return render_template("success.html", msg="Your quote request has been submitted!")
+        return render_template('quote.html')
 
 
-
-# Only for local development
-if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True)
+    # Only for local development
+    if __name__ == "__main__":
+        app = create_app()
+        app.run(debug=True)
