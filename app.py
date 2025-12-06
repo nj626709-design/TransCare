@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from datetime import datetime
@@ -50,9 +50,8 @@ def create_app():
         return render_template('clients.html')
 
     # ------------------------
-    # CONTACT FORM FIXED
+    # CONTACT FORM
     # ------------------------
-
     @app.route('/contact', methods=['GET', 'POST'])
     def contact():
         if request.method == 'POST':
@@ -64,9 +63,9 @@ def create_app():
             send_email(
                 subject=f"New Contact Message: {subject}",
                 sender=email,
-                recipients=['yourmail@yourdomain.com'],
+                recipients=[os.getenv("MAIL_USERNAME")],
                 body=f"""
-New contact form submission:
+New contact message:
 
 Name: {name}
 Email: {email}
@@ -74,14 +73,14 @@ Subject: {subject}
 Message:
 {message}
 """
-                )
+            )
             return render_template("success.html", msg="Your message has been sent!")
+
         return render_template("contact.html")
 
     # ------------------------
-    # QUOTE FORM FIXED
+    # QUOTE FORM
     # ------------------------
-
     @app.route('/quote', methods=['GET', 'POST'])
     def quote():
         if request.method == 'POST':
@@ -95,7 +94,7 @@ Message:
             send_email(
                 subject="New Quote Request",
                 sender=email,
-                recipients=['yourmail@yourdomain.com'],
+                recipients=[os.getenv("MAIL_USERNAME")],
                 body=f"""
 New quote request:
 
@@ -107,12 +106,24 @@ Date Needed: {date_needed}
 Message:
 {message}
 """
-                )
+            )
             return render_template("success.html", msg="Your quote request has been submitted!")
 
         return render_template("quote.html")
 
-    # Only for local development
-    if __name__ == "__main__":
-        app = create_app()
-        app.run(debug=True)
+    return app   # <-- IMPORTANT
+
+
+# ------------------------
+# OUTSIDE FUNCTION
+# ------------------------
+def send_email(subject, sender, recipients, body):
+    msg = Message(subject, sender=sender, recipients=recipients)
+    msg.body = body
+    mail.send(msg)
+
+
+# Run locally only
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)
