@@ -59,6 +59,7 @@ def create_app():
     # -----------------------------
     @app.route('/contact', methods=['GET', 'POST'])
     def contact():
+        return render_template('contact.html')
         if request.method == 'POST':
             try:
                 name = request.form.get('name')
@@ -98,6 +99,7 @@ Message:
     # -----------------------------
     @app.route('/quote', methods=['GET', 'POST'])
     def quote():
+        return render_template('quote.html')
         if request.method == 'POST':
             try:
                 name = request.form.get('name')
@@ -138,13 +140,6 @@ Weight: {weight} kg
                 return redirect(url_for('home'))
 
         return render_template('quote.html')
-
-    # -----------------------------
-    # Favicon (optional)
-    # -----------------------------
-    @app.route('/favicon.ico')
-    def favicon():
-        return redirect(url_for('static', filename='favicon.ico'))
 
     return app
 
