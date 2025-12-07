@@ -61,6 +61,7 @@ Message: {message}
             flash("Error sending message.", "danger")
 
         return redirect(url_for("contact"))
+    return render_template("contact.html")
 
     
 
