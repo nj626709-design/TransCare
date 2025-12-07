@@ -7,7 +7,7 @@ import os
 # Load environment variables
 load_dotenv()
 
-mail = Mail(app)
+mail = Mail()
 
 def create_app():
     app = Flask(__name__)
