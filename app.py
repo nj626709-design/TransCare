@@ -136,7 +136,7 @@ Weight: {weight} kg
             except Exception as e:
                 print("Error sending quote:", e)
                 flash("Failed to send quote. Please try again.", "danger")
-                return redirect(url_for('quote'))
+                return redirect(url_for('quot))
 
         return render_template('quote.html')
 
@@ -148,5 +148,7 @@ Weight: {weight} kg
 # -----------------------------
 app = create_app()
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
