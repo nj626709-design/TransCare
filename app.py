@@ -15,7 +15,7 @@ def create_app():
     # -----------------------------
     # General Config
     # -----------------------------
-    app.secret_key = os.getenv("SECRET_KEY") or "supersecretkey"
+    app.secret_key = "supersecretkey"
 
     # Make current year available in all templates
     @app.context_processor
@@ -31,9 +31,9 @@ def create_app():
     app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
     app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS", "True") == "True"
     app.config['MAIL_USE_SSL'] = False
-    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER", app.config['MAIL_USERNAME'])
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER")
 
-    mail.init_app(app)
+    mail = Mail(app)
 
     # -----------------------------
     # Routes
@@ -62,16 +62,16 @@ def create_app():
         return render_template('contact.html')
 
         if request.method == 'POST':
-            try:
-                name = request.form.get('name')
-                email = request.form.get('email')
-                subject = request.form.get('subject')
-                message = request.form.get('message')
+            name = request.form.get('name')
+            email = request.form.get('email')
+            subject = request.form.get('subject')
+            message = request.form.get('message')
 
+            try:
                 msg = Message(
                     subject=f"New Contact Message: {subject}",
                     sender=app.config['MAIL_DEFAULT_SENDER'],
-                    recipients=[app.config['MAIL_USERNAME']]
+                    recipients=[app.config['info@transcaretransport.in']]
                 )
 
                 msg.body = f"""
@@ -85,12 +85,11 @@ Message:
 """
                 mail.send(msg)
                 flash("Your message has been sent successfully!", "success")
-                return redirect(url_for('home'))
-
+                
             except Exception as e:
                 print("Error sending email:", e)
                 flash("Something went wrong. Please try again.", "danger")
-                return redirect(url_for('home'))
+                return redirect(url_for('contact'))
 
         # GET request
         return render_template('contact.html')
@@ -102,19 +101,19 @@ Message:
     def quote():
         return render_template('quote.html')
         if request.method == 'POST':
-            try:
-                name = request.form.get('name')
-                email = request.form.get('email')
-                phone = request.form.get('phone')
-                pickup = request.form.get('pickup')
-                drop = request.form.get('drop')
-                goods = request.form.get('goods')
-                weight = request.form.get('weight')
+            name = request.form.get('name')
+            email = request.form.get('email')
+            phone = request.form.get('phone')
+            pickup = request.form.get('pickup')
+            drop = request.form.get('drop')
+            goods = request.form.get('goods')
+            weight = request.form.get('weight')
 
+            try:
                 msg = Message(
-                    subject="New Quote Request",
-                    sender=app.config['MAIL_DEFAULT_SENDER'],
-                    recipients=[app.config['MAIL_USERNAME']]
+                subject="New Quote Request",
+                sender=app.config['MAIL_DEFAULT_SENDER'],
+                recipients=[app.config['info@transcaretransport.in']]
                 )
 
                 msg.body = f"""
@@ -133,12 +132,11 @@ Weight: {weight} kg
 
                 mail.send(msg)
                 flash("Quote request sent successfully!", "success")
-                return redirect(url_for('home'))
-
+                
             except Exception as e:
                 print("Error sending quote:", e)
                 flash("Failed to send quote. Please try again.", "danger")
-                return redirect(url_for('home'))
+                return redirect(url_for('quote'))
 
         return render_template('quote.html')
 
