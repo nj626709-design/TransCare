@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from datetime import datetime
 import os
 
-# Load environment variables
 load_dotenv()
 
 mail = Mail()
@@ -12,19 +11,14 @@ mail = Mail()
 def create_app():
     app = Flask(__name__)
 
-    # -----------------------------
     # General Config
-    # -----------------------------
-    app.secret_key = os.getenv("SECRET_KEY") or "supersecretkey"
+    app.secret_key = os.getenv("SECRET_KEY", "supersecretkey")
 
-    # Make current year available in all templates
     @app.context_processor
     def inject_year():
         return {"current_year": lambda: datetime.now().year}
 
-    # -----------------------------
     # Mail Config
-    # -----------------------------
     app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
     app.config['MAIL_PORT'] = int(os.getenv("MAIL_PORT", 587))
     app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
@@ -35,9 +29,7 @@ def create_app():
 
     mail.init_app(app)
 
-    # -----------------------------
-    # Routes
-    # -----------------------------
+    # ROUTES
     @app.route('/')
     def home():
         return render_template('home.html')
@@ -54,25 +46,25 @@ def create_app():
     def clients():
         return render_template('clients.html')
 
-    # -----------------------------
-    # Contact Form
-    # -----------------------------
+    # ----------------------------
+    # CONTACT FORM
+    # ----------------------------
     @app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'POST':
-        try:
-            name = request.form.get('name')
-            email = request.form.get('email')
-            subject = request.form.get('subject')
-            message = request.form.get('message')
+    def contact():
+        if request.method == 'POST':
+            try:
+                name = request.form.get('name')
+                email = request.form.get('email')
+                subject = request.form.get('subject')
+                message = request.form.get('message')
 
-            msg = Message(
-                subject=f"New Contact Message: {subject}",
-                sender=app.config['MAIL_DEFAULT_SENDER'],
-                recipients=[app.config['MAIL_USERNAME']]
-            )
+                msg = Message(
+                    subject=f"New Contact Message: {subject}",
+                    sender=app.config['MAIL_DEFAULT_SENDER'],
+                    recipients=[app.config['MAIL_USERNAME']]
+                )
 
-            msg.body = f"""
+                msg.body = f"""
 New Contact Message from TransCare Website
 
 Name: {name}
@@ -81,38 +73,39 @@ Subject: {subject}
 Message:
 {message}
 """
-            mail.send(msg)
-            flash("Your message has been sent successfully!", "success")
-            return redirect(url_for('home'))
 
-        except Exception as e:
-            print("Error sending email:", e)
-            flash("Something went wrong. Please try again.", "danger")
-            return redirect(url_for('home'))
+                mail.send(msg)
+                flash("Your message has been sent successfully!", "success")
+                return redirect(url_for('home'))
 
-    return render_template('contact.html')
+            except Exception as e:
+                print("Error sending email:", e)
+                flash("Something went wrong. Please try again.", "danger")
+                return redirect(url_for('home'))
 
-    # -----------------------------
-    # Quote Form
-    # -----------------------------
+        return render_template('contact.html')
+
+    # ----------------------------
+    # QUOTE FORM
+    # ----------------------------
     @app.route('/quote', methods=['GET', 'POST'])
-def quote():
-    if request.method == 'POST':
-        try:
-            name = request.form.get('name')
-            email = request.form.get('email')
-            phone = request.form.get('phone')
-            vehicle_type = request.form.get('vehicle_type')
-            date_needed = request.form.get('date_needed')
-            message = request.form.get('message')
+    def quote():
+        if request.method == 'POST':
+            try:
+                name = request.form.get('name')
+                email = request.form.get('email')
+                phone = request.form.get('phone')
+                vehicle_type = request.form.get('vehicle_type')
+                date_needed = request.form.get('date_needed')
+                message = request.form.get('message')
 
-            msg = Message(
-                subject="New Quote Request",
-                sender=app.config['MAIL_DEFAULT_SENDER'],
-                recipients=[app.config['MAIL_USERNAME']]
-            )
+                msg = Message(
+                    subject="New Quote Request",
+                    sender=app.config['MAIL_DEFAULT_SENDER'],
+                    recipients=[app.config['MAIL_USERNAME']]
+                )
 
-            msg.body = f"""
+                msg.body = f"""
 New Quote / Booking Request from TransCare Website
 
 Name: {name}
@@ -125,26 +118,24 @@ Date Needed: {date_needed}
 Additional Details:
 {message}
 """
-            mail.send(msg)
-            flash("Quote request sent successfully!", "success")
-            return redirect(url_for('home'))
 
-        except Exception as e:
-            print("Error sending quote:", e)
-            flash("Failed to send quote. Please try again.", "danger")
-            return redirect(url_for('home'))
+                mail.send(msg)
+                flash("Quote request sent successfully!", "success")
+                return redirect(url_for('home'))
 
-    return render_template('quote.html')
+            except Exception as e:
+                print("Error sending quote:", e)
+                flash("Failed to send quote. Please try again.", "danger")
+                return redirect(url_for('home'))
+
+        return render_template('quote.html')
 
     return app
 
-# -----------------------------
-# WSGI app for Render / Production
-# -----------------------------
+
+# WSGI app for Render
 app = create_app()
 
-# -----------------------------
 # Local development
-# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)
