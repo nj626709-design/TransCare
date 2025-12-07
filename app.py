@@ -34,6 +34,7 @@ def home():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
+    return render_template("contact.html")
     if request.method == "POST":
         name = request.form.get("name")
         email = request.form.get("email")
@@ -61,7 +62,7 @@ Message: {message}
 
         return redirect(url_for("contact"))
 
-    return render_template("contact.html")
+    
 
 
 @app.route("/quote", methods=["GET", "POST"])
