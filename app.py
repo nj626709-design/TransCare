@@ -1,95 +1,154 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
-import os
 from datetime import datetime
+import os
 
-# -------------------- Load Environment Variables --------------------
+# Load environment variables
 load_dotenv()
-
-app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "supersecretkey")
-
-# -------------------- Mail Configuration --------------------
-app.config['MAIL_SERVER'] = 'smtp.hostinger.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = os.getenv('HOSTINGER_EMAIL')       # Your Hostinger email
-app.config['MAIL_PASSWORD'] = os.getenv('HOSTINGER_PASSWORD')    # Your email password
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('HOSTINGER_EMAIL') # Sender email
 
 mail = Mail(app)
 
-# -------------------- Helper Function to Log Submissions --------------------
-def log_submission(filename, data):
-    with open(filename, "a") as f:
-        f.write(f"{datetime.now()} - {data}\n{'-'*50}\n")
+def create_app():
+    app = Flask(__name__)
 
-# -------------------- Home Route --------------------
-@app.route("/")
-def index():
-    return render_template("index.html")
+    # -----------------------------
+    # General Config
+    # -----------------------------
+    app.secret_key = os.getenv("SECRET_KEY") or "supersecretkey"
 
-# -------------------- Contact Form --------------------
-@app.route("/contact", methods=["GET", "POST"])
-def contact():
-    if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        subject = request.form.get("subject")
-        message = request.form.get("message")
+    # Make current year available in all templates
+    @app.context_processor
+    def inject_year():
+        return {"current_year": lambda: datetime.now().year}
 
-        # Compose email
-        msg = Message(
-            subject=f"New Contact Form Submission: {subject}",
-            recipients=[app.config['MAIL_USERNAME']],  # Send to yourself
-            body=f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
-        )
+    # -----------------------------
+    # Mail Config
+    # -----------------------------
+    app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
+    app.config['MAIL_PORT'] = int(os.getenv("MAIL_PORT", 587))
+    app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+    app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+    app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS", "True") == "True"
+    app.config['MAIL_USE_SSL'] = False
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER", app.config['MAIL_USERNAME'])
 
-        # Try sending email
-        try:
-            mail.send(msg)
-            flash("Your message has been sent successfully!", "success")
-        except Exception as e:
-            flash(f"Error sending email: {str(e)}", "danger")
+    mail.init_app(app)
 
-        # Log submission as backup
-        log_submission("contact.txt", f"Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage:\n{message}")
+    # -----------------------------
+    # Routes
+    # -----------------------------
+    @app.route('/')
+    def home():
+        return render_template('home.html')
 
-        return redirect(url_for('contact'))
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
 
-    return render_template("contact.html")
+    @app.route('/services')
+    def services():
+        return render_template('services.html')
 
-# -------------------- Quote Form --------------------
-@app.route("/quote", methods=["GET", "POST"])
-def quote():
-    if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        phone = request.form.get("phone")
-        message = request.form.get("message")
+    @app.route('/clients')
+    def clients():
+        return render_template('clients.html')
 
-        # Compose email
-        msg = Message(
-            subject=f"New Quote Request from {name}",
-            recipients=[app.config['MAIL_USERNAME']],  # Send to yourself
-            body=f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage:\n{message}"
-        )
+    # -----------------------------
+    # Contact Form
+    # -----------------------------
+    @app.route('/contact', methods=['GET', 'POST'])
+    def contact():
+        return render_template('contact.html')
 
-        # Try sending email
-        try:
-            mail.send(msg)
-            flash("Quote request sent successfully!", "success")
-        except Exception as e:
-            flash(f"Error sending email: {str(e)}", "danger")
+        if request.method == 'POST':
+            try:
+                name = request.form.get('name')
+                email = request.form.get('email')
+                subject = request.form.get('subject')
+                message = request.form.get('message')
 
-        # Log submission as backup
-        log_submission("quote.txt", f"Name: {name}\nEmail: {email}\nPhone: {phone}\nMessage:\n{message}")
+                msg = Message(
+                    subject=f"New Contact Message: {subject}",
+                    sender=app.config['MAIL_DEFAULT_SENDER'],
+                    recipients=[app.config['MAIL_USERNAME']]
+                )
 
-        return redirect(url_for('quote'))
+                msg.body = f"""
+New Contact Message from TransCare Website
 
-    return render_template("quote.html")
+Name: {name}
+Email: {email}
+Subject: {subject}
+Message:
+{message}
+"""
+                mail.send(msg)
+                flash("Your message has been sent successfully!", "success")
+                return redirect(url_for('home'))
 
-# -------------------- Run App --------------------
+            except Exception as e:
+                print("Error sending email:", e)
+                flash("Something went wrong. Please try again.", "danger")
+                return redirect(url_for('home'))
+
+        # GET request
+        return render_template('contact.html')
+
+    # -----------------------------
+    # Quote Form
+    # -----------------------------
+    @app.route('/quote', methods=['GET', 'POST'])
+    def quote():
+        return render_template('quote.html')
+        if request.method == 'POST':
+            try:
+                name = request.form.get('name')
+                email = request.form.get('email')
+                phone = request.form.get('phone')
+                pickup = request.form.get('pickup')
+                drop = request.form.get('drop')
+                goods = request.form.get('goods')
+                weight = request.form.get('weight')
+
+                msg = Message(
+                    subject="New Quote Request",
+                    sender=app.config['MAIL_DEFAULT_SENDER'],
+                    recipients=[app.config['MAIL_USERNAME']]
+                )
+
+                msg.body = f"""
+New Quote Request from TransCare Website
+
+Name: {name}
+Email: {email}
+Phone: {phone}
+
+Pickup Location: {pickup}
+Drop Location: {drop}
+
+Type of Goods: {goods}
+Weight: {weight} kg
+"""
+
+                mail.send(msg)
+                flash("Quote request sent successfully!", "success")
+                return redirect(url_for('home'))
+
+            except Exception as e:
+                print("Error sending quote:", e)
+                flash("Failed to send quote. Please try again.", "danger")
+                return redirect(url_for('home'))
+
+        return render_template('quote.html')
+
+    return app
+
+
+# -----------------------------
+# WSGI / Local development
+# -----------------------------
+app = create_app()
+
 if __name__ == "__main__":
     app.run(debug=True)
