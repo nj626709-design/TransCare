@@ -136,7 +136,7 @@ Weight: {weight} kg
             except Exception as e:
                 print("Error sending quote:", e)
                 flash("Failed to send quote. Please try again.", "danger")
-                return redirect(url_for('quot))
+                return redirect(url_for('quote))
 
         return render_template('quote.html')
 
