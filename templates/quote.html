@@ -1,39 +1,92 @@
 {% extends "base.html" %}
 {% block content %}
 <h2 class="text-primary">Request a Quote / Booking</h2>
+
 <form action="{{ url_for('quote') }}" method="POST">
   <div class="row">
+
     <div class="col-md-6 mb-3">
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name" class="form-control" required>
+      <label>Name</label>
+      <input type="text" name="name" class="form-control" required>
     </div>
+
     <div class="col-md-6 mb-3">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" class="form-control" required>
+      <label>Email</label>
+      <input type="email" name="email" class="form-control" required>
     </div>
+
     <div class="col-md-6 mb-3">
-      <label for="phone">Phone</label>
-      <input type="text" id="phone" name="phone" class="form-control" required>
+      <label>Phone</label>
+      <input type="text" name="phone" class="form-control" required>
     </div>
+
+    <!-- MAIN VEHICLE TYPE -->
     <div class="col-md-6 mb-3">
-      <label for="vehicle_type">Vehicle Type</label>
-      <select id="vehicle_type" name="vehicle_type" class="form-select">
+      <label>Vehicle Type</label>
+      <select name="vehicle_type" id="vehicleType" class="form-select" required>
         <option value="">Select Vehicle</option>
+        <option value="car">Car</option>
+        <option value="bus">Bus</option>
         <option value="truck">Truck</option>
-        <option value="van">Van</option>
-        <option value="tempo">Tempo</option>
-        <option value="container">Container</option>
+        <option value="ambulance">Ambulance</option>
+        <option value="crane">Crane</option>
       </select>
     </div>
+
+    <!-- VEHICLE SUB TYPE -->
+    <div class="col-md-6 mb-3 d-none" id="subVehicleDiv">
+      <label>Vehicle Size</label>
+      <select name="vehicle_subtype" id="vehicleSubType" class="form-select">
+        <!-- options added via JS -->
+      </select>
+    </div>
+
     <div class="col-md-6 mb-3">
-      <label for="date_needed">Date Needed</label>
-      <input type="date" id="date_needed" name="date_needed" class="form-control" required>
+      <label>Date Needed</label>
+      <input type="date" name="date_needed" class="form-control" required>
     </div>
+
     <div class="col-12 mb-3">
-      <label for="message">Message</label>
-      <textarea id="message" name="message" class="form-control" rows="4" placeholder="Additional details"></textarea>
+      <label>Message</label>
+      <textarea name="message" class="form-control" rows="4"></textarea>
     </div>
+
   </div>
-  <button class="btn btn-primary" type="submit">Submit</button>
+
+  <button class="btn btn-primary">Submit</button>
 </form>
+
+<!-- JAVASCRIPT -->
+<script>
+const vehicleType = document.getElementById("vehicleType");
+const subVehicleDiv = document.getElementById("subVehicleDiv");
+const vehicleSubType = document.getElementById("vehicleSubType");
+
+const options = {
+  car: ["Hatchback", "Sedan", "SUV", "Premium SUV"],
+  bus: ["20 Seater", "31 Seater", "50 Seater", "AC / Non-AC"],
+  truck: ["Tata Ace", "Pickup", "20 ft Truck", "40 ft Truck"],
+  ambulance: ["Basic Ambulance", "Cardiac Ambulance", "ICU Ambulance", "AC / Non-AC"],
+  crane: ["15 Ton Farana", "23 Ton Farana", "60 Ton Telescope Crane", "110 Ton Telescope Crane", "Sizzir Lift", "Boom Lift"]
+};
+
+vehicleType.addEventListener("change", function () {
+  const selected = this.value;
+  vehicleSubType.innerHTML = "";
+
+  if (options[selected]) {
+    subVehicleDiv.classList.remove("d-none");
+
+    options[selected].forEach(item => {
+      const opt = document.createElement("option");
+      opt.value = item;
+      opt.textContent = item;
+      vehicleSubType.appendChild(opt);
+    });
+  } else {
+    subVehicleDiv.classList.add("d-none");
+  }
+});
+</script>
+
 {% endblock %}

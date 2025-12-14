@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import request, render_template, redirect, url_for, flash
 from flask_mail import Mail, Message
 from datetime import datetime
 
@@ -56,26 +56,53 @@ def contact():
             print("Mail error:", e)
     return render_template("contact.html", success=success)
 
-# Quote route
+#Quote route
 @app.route("/quote", methods=["GET", "POST"])
 def quote():
-    success = False
     if request.method == "POST":
-        client_name = request.form.get("name")
-        client_email = request.form.get("email")
-        service = request.form.get("service")
-        details = request.form.get("details")
+        name = request.form.get("name")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        vehicle_type = request.form.get("vehicle_type")
+        vehicle_subtype = request.form.get("vehicle_subtype")
+        date_needed = request.form.get("date_needed")
+        message = request.form.get("message")
+
+        # 📧 Email body
+        email_body = f"""
+New Quote Request Received
+
+Name: {name}
+Email: {email}
+Phone: {phone}
+
+Vehicle Type: {vehicle_type}
+Vehicle Size: {vehicle_subtype}
+
+Date Needed: {date_needed}
+
+Message:
+{message}
+        """
+
         try:
             msg = Message(
-                subject=f"Quote Request: {service}",
-                recipients=[app.config.get("MAIL_USERNAME")],
-                body=f"Name: {client_name}\nEmail: {client_email}\nDetails:\n{details}"
+                subject="🚚 New Quote Request - TransCare",
+                sender=app.config["MAIL_USERNAME"],
+                recipients=[app.config["MAIL_USERNAME"]],  # your email
+                body=email_body
             )
             mail.send(msg)
-            success = True
+
+            flash("Your quote request has been sent successfully!", "success")
+
         except Exception as e:
-            print("Mail error:", e)
-    return render_template("quote.html", success=success)
+            print("Mail Error:", e)
+            flash("Error sending quote. Please try again.", "danger")
+
+        return redirect(url_for("quote"))
+
+    return render_template("quote.html")
 
 #Happy Clients route
 @app.route('/clients')
