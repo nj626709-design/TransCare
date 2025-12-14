@@ -5,10 +5,12 @@ import os
 import threading
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'your_secret_key'  # Change to a strong secret in production
 
-# Mail config (ensure .env values are correct)
-app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
+# -----------------------------
+# Mail Configuration
+# -----------------------------
+app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.hostinger.com")
 app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", 587))
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USE_SSL"] = False
@@ -18,32 +20,42 @@ app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_USERNAME")
 
 mail = Mail(app)
 
+# -----------------------------
 # Context processor for footer
+# -----------------------------
 @app.context_processor
 def inject_year():
     return {"current_year": datetime.now().year}
 
-# Helper function to send emails asynchronously
+# -----------------------------
+# Async Email Helper
+# -----------------------------
 def send_async_email(app, msg):
     with app.app_context():
-        mail.send(msg)
+        try:
+            mail.send(msg)
+            print("Email sent successfully!")
+        except Exception as e:
+            print("Failed to send email:", e)
 
-# Home route
+# -----------------------------
+# Routes
+# -----------------------------
 @app.route("/")
 def home():
     return render_template("home.html")
 
-# About route
-@app.route('/about')
+@app.route("/about")
 def about():
-    return render_template('about.html')
+    return render_template("about.html")
 
-# Services route
-@app.route('/services')
+@app.route("/services")
 def services():
-    return render_template('services.html')
+    return render_template("services.html")
 
-# Contact route
+# -----------------------------
+# Contact Route
+# -----------------------------
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
     if request.method == "POST":
@@ -52,32 +64,31 @@ def contact():
         subject = request.form.get("subject")
         message = request.form.get("message")
 
-        if not (name and email and subject and message):
+        if not all([name, email, subject, message]):
             flash("Please fill all fields.", "warning")
-            return redirect(url_for('contact'))
+            return redirect(url_for("contact"))
 
-        # Save contact info to a text file (optional)
+        # Optional: Save to text file
         with open("contact_submissions.txt", "a") as f:
             f.write(f"Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n{'-'*50}\n")
 
         # Send email asynchronously
-        try:
-            msg = Message(
-                subject=f"New Contact Form: {subject}",
-                sender=app.config['MAIL_USERNAME'],
-                recipients=[app.config['MAIL_USERNAME']],  # your email
-                body=f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
-            )
-            threading.Thread(target=send_async_email, args=(app, msg)).start()
-            flash("Your message has been sent successfully!", "success")
-        except Exception as e:
-            flash(f"Failed to send message: {str(e)}", "danger")
+        msg = Message(
+            subject=f"New Contact Form: {subject}",
+            sender=app.config['MAIL_USERNAME'],
+            recipients=[app.config['MAIL_USERNAME']],
+            body=f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
+        )
+        threading.Thread(target=send_async_email, args=(app, msg)).start()
 
-        return redirect(url_for('contact'))
+        flash("Your message has been sent successfully!", "success")
+        return redirect(url_for("contact"))
 
     return render_template("contact.html")
 
-# Quote route
+# -----------------------------
+# Quote Route
+# -----------------------------
 @app.route("/quote", methods=["GET", "POST"])
 def quote():
     if request.method == "POST":
@@ -91,18 +102,44 @@ def quote():
             "message": request.form.get("message"),
         }
 
-        # LOG ONLY (safe)
-        print("QUOTE RECEIVED:", data)
+        # Optional: Save to text file
+        with open("quote_submissions.txt", "a") as f:
+            f.write(f"{data}\n{'-'*50}\n")
 
+        # Send email asynchronously
+        msg = Message(
+            subject=f"New Quote Request: {data['vehicle_type']} {data['vehicle_subtype']}",
+            sender=app.config['MAIL_USERNAME'],
+            recipients=[app.config['MAIL_USERNAME']],
+            body=f"""
+Quote Request Details:
+
+Name: {data['name']}
+Email: {data['email']}
+Phone: {data['phone']}
+Vehicle Type: {data['vehicle_type']}
+Vehicle Subtype: {data['vehicle_subtype']}
+Date Needed: {data['date_needed']}
+Message: {data['message']}
+"""
+        )
+        threading.Thread(target=send_async_email, args=(app, msg)).start()
+
+        print("QUOTE RECEIVED:", data)
         flash("Your quote request has been submitted successfully!", "success")
         return redirect(url_for("quote"))
 
     return render_template("quote.html")
 
-# Happy Clients route
-@app.route('/clients')
+# -----------------------------
+# Happy Clients
+# -----------------------------
+@app.route("/clients")
 def clients():
-    return render_template('clients.html')
+    return render_template("clients.html")
 
+# -----------------------------
+# Run App
+# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)
