@@ -2,10 +2,10 @@ from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_mail import Mail, Message
 from datetime import datetime
 import os
+import threading
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-
 
 # Mail config (ensure .env values are correct)
 app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
@@ -22,6 +22,11 @@ mail = Mail(app)
 @app.context_processor
 def inject_year():
     return {"current_year": datetime.now().year}
+
+# Helper function to send emails asynchronously
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
 
 # Home route
 @app.route("/")
@@ -55,7 +60,7 @@ def contact():
         with open("contact_submissions.txt", "a") as f:
             f.write(f"Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n{'-'*50}\n")
 
-        # Send email
+        # Send email asynchronously
         try:
             msg = Message(
                 subject=f"New Contact Form: {subject}",
@@ -63,7 +68,7 @@ def contact():
                 recipients=[app.config['MAIL_USERNAME']],  # your email
                 body=f"Name: {name}\nEmail: {email}\nMessage:\n{message}"
             )
-            mail.send(msg)
+            threading.Thread(target=send_async_email, args=(app, msg)).start()
             flash("Your message has been sent successfully!", "success")
         except Exception as e:
             flash(f"Failed to send message: {str(e)}", "danger")
@@ -71,7 +76,8 @@ def contact():
         return redirect(url_for('contact'))
 
     return render_template("contact.html")
-#Quote route
+
+# Quote route
 @app.route("/quote", methods=["GET", "POST"])
 def quote():
     if request.method == "POST":
@@ -93,7 +99,7 @@ def quote():
 
     return render_template("quote.html")
 
-#Happy Clients route
+# Happy Clients route
 @app.route('/clients')
 def clients():
     return render_template('clients.html')
