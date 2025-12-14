@@ -30,6 +30,11 @@ def home():
 def about():
     return render_template('about.html')
 
+# Services route
+@app.route('/services')
+def services():
+    return render_template('services.html')
+
 # Contact route
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
@@ -71,6 +76,11 @@ def quote():
         except Exception as e:
             print("Mail error:", e)
     return render_template("quote.html", success=success)
+
+#Happy Clients route
+@app.route('/clients')
+def services():
+    return render_template('clients.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
