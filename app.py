@@ -16,8 +16,8 @@ def create_app():
     # Context Processor
     # -----------------------------
     @app.context_processor
-    def inject_year():
-        return {"current_year": datetime.now().year}
+    def inject_current_year():
+        return dict{"current_year": datetime.now().year}
 
     # -----------------------------
     # Mail Config
