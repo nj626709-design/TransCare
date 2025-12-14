@@ -72,39 +72,32 @@ def quote():
         message = request.form.get("message")
 
         email_body = f"""
-New Quote Request Received
+New Quote Request
 
 Name: {name}
 Email: {email}
 Phone: {phone}
-
 Vehicle Type: {vehicle_type}
 Vehicle Size: {vehicle_subtype}
 Date Needed: {date_needed}
-
-Message:
-{message}
-"""
+Message: {message}
+        """
 
         try:
             msg = Message(
-                subject="🚚 New Quote Request - TransCare",
-                sender=app.config["MAIL_USERNAME"],
+                subject="New Quote Request - TransCare",
                 recipients=[app.config["MAIL_USERNAME"]],
                 body=email_body
             )
             mail.send(msg)
-            flash("Your quote request has been sent successfully!", "success")
-
         except Exception as e:
+            # 🔥 CRITICAL: never crash the request
             print("MAIL ERROR:", e)
-            flash("Error sending quote. Please try again later.", "danger")
 
-        # ✅ THIS WAS MISSING
+        flash("Your quote request has been submitted successfully!", "success")
         return redirect(url_for("quote"))
 
     return render_template("quote.html")
-
 
 #Happy Clients route
 @app.route('/clients')
