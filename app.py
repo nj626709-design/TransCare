@@ -63,36 +63,18 @@ def contact():
 @app.route("/quote", methods=["GET", "POST"])
 def quote():
     if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        phone = request.form.get("phone")
-        vehicle_type = request.form.get("vehicle_type")
-        vehicle_subtype = request.form.get("vehicle_subtype")
-        date_needed = request.form.get("date_needed")
-        message = request.form.get("message")
+        data = {
+            "name": request.form.get("name"),
+            "email": request.form.get("email"),
+            "phone": request.form.get("phone"),
+            "vehicle_type": request.form.get("vehicle_type"),
+            "vehicle_subtype": request.form.get("vehicle_subtype"),
+            "date_needed": request.form.get("date_needed"),
+            "message": request.form.get("message"),
+        }
 
-        email_body = f"""
-New Quote Request
-
-Name: {name}
-Email: {email}
-Phone: {phone}
-Vehicle Type: {vehicle_type}
-Vehicle Size: {vehicle_subtype}
-Date Needed: {date_needed}
-Message: {message}
-        """
-
-        try:
-            msg = Message(
-                subject="New Quote Request - TransCare",
-                recipients=[app.config["MAIL_USERNAME"]],
-                body=email_body
-            )
-            mail.send(msg)
-        except Exception as e:
-            # 🔥 CRITICAL: never crash the request
-            print("MAIL ERROR:", e)
+        # LOG ONLY (safe)
+        print("QUOTE RECEIVED:", data)
 
         flash("Your quote request has been submitted successfully!", "success")
         return redirect(url_for("quote"))
