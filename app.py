@@ -79,7 +79,7 @@ def quote():
 
 #Happy Clients route
 @app.route('/clients')
-def services():
+def clients():
     return render_template('clients.html')
 
 if __name__ == "__main__":
