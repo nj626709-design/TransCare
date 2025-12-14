@@ -1,18 +1,21 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_mail import Mail, Message
 from datetime import datetime
+import os
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "secret123")
+
 
 # Mail config (ensure .env values are correct)
-app.config.update(
-    MAIL_SERVER='smtp.example.com',
-    MAIL_PORT=587,
-    MAIL_USERNAME='your@email.com',
-    MAIL_PASSWORD='yourpassword',
-    MAIL_USE_TLS=True,
-    MAIL_USE_SSL=False
-)
+app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
+app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", 587))
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USE_SSL"] = False
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_USERNAME")
+
 mail = Mail(app)
 
 # Context processor for footer
@@ -68,7 +71,6 @@ def quote():
         date_needed = request.form.get("date_needed")
         message = request.form.get("message")
 
-        # 📧 Email body
         email_body = f"""
 New Quote Request Received
 
@@ -78,31 +80,31 @@ Phone: {phone}
 
 Vehicle Type: {vehicle_type}
 Vehicle Size: {vehicle_subtype}
-
 Date Needed: {date_needed}
 
 Message:
 {message}
-        """
+"""
 
         try:
             msg = Message(
                 subject="🚚 New Quote Request - TransCare",
                 sender=app.config["MAIL_USERNAME"],
-                recipients=[app.config["MAIL_USERNAME"]],  # your email
+                recipients=[app.config["MAIL_USERNAME"]],
                 body=email_body
             )
             mail.send(msg)
-
             flash("Your quote request has been sent successfully!", "success")
 
         except Exception as e:
-            print("Mail Error:", e)
-            flash("Error sending quote. Please try again.", "danger")
+            print("MAIL ERROR:", e)
+            flash("Error sending quote. Please try again later.", "danger")
 
+        # ✅ THIS WAS MISSING
         return redirect(url_for("quote"))
 
     return render_template("quote.html")
+
 
 #Happy Clients route
 @app.route('/clients')
